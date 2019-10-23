@@ -2,15 +2,17 @@ import { Injectable } from '@angular/core';
 import {Book} from '../models/Book.model';
 import {Subject} from 'rxjs';
 import * as firebase from 'firebase';
+import DataSnapshot = firebase.database.DataSnapshot;
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class BooksService {
   // attention: bien générer books avec = []
   books: Book[] = [];
   booksSubject = new Subject<Book[]>();
-  constructor() { }
+
+  constructor() {
+    this.getBooks();
+  }
 
   emitBooks() {
     this.booksSubject.next(this.books);
@@ -32,17 +34,15 @@ export class BooksService {
   }
 
   getSingleBook(id: number) {
-    // pour un livre pas besoin de callback comme en getBooks
     return new Promise(
       (resolve, reject) => {
-        firebase.database().ref('/books' + id)
-          .once('value')
-          .then( (data) => {
+        firebase.database().ref('/books/' + id).once('value').then(
+          (data: DataSnapshot) => {
             resolve(data.val());
           }, (error) => {
             reject(error);
-            }
-          );
+          }
+        );
       }
     );
   }
@@ -61,7 +61,7 @@ export class BooksService {
         }
       }
     );
-    this.books.splice(bookIndexToRemove);
+    this.books.splice(bookIndexToRemove, 1);
     this.saveBooks();
     this.emitBooks();
   }

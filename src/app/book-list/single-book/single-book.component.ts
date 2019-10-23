@@ -17,16 +17,13 @@ export class SingleBookComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    // book vide en attendant qu'il charge, sinon erreur d'affichage
     this.book = new Book('', '');
-    // récupérer l'identifiant
-    const id = this.route.snapshot.params['id'];
-    // cast number +
-    this.booksService.getSingleBook(+id)
-      .then( (book: Book) => {
+    const id = this.route.snapshot.params.id;
+    this.booksService.getSingleBook(+id).then(
+      (book: Book) => {
         this.book = book;
-        }
-      );
+      }
+    );
   }
 
   onBack() {
