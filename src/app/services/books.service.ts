@@ -7,7 +7,8 @@ import * as firebase from 'firebase';
   providedIn: 'root'
 })
 export class BooksService {
-  books: Book[];
+  // attention: bien générer books avec = []
+  books: Book[] = [];
   booksSubject = new Subject<Book[]>();
   constructor() { }
 
@@ -44,5 +45,24 @@ export class BooksService {
           );
       }
     );
+  }
+
+  createNewBook(newBook: Book) {
+    this.books.push(newBook);
+    this.saveBooks();
+    this.emitBooks();
+  }
+
+  removeBook(book: Book) {
+    const bookIndexToRemove = this.books.findIndex(
+      (bookEl) => {
+        if (bookEl === book) {
+          return true;
+        }
+      }
+    );
+    this.books.splice(bookIndexToRemove);
+    this.saveBooks();
+    this.emitBooks();
   }
 }
